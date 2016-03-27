@@ -21,6 +21,7 @@ import org.json.simple.JSONObject;
 
 import com.models.DBConnection;
 import com.models.Followers;
+import com.models.PlacesModel;
 import com.models.UserModel;
 
 @Path("/")
@@ -119,6 +120,29 @@ public class Services {
 	
 	
 	/////////////////////////////////////////////////
+	
+	
+	@POST
+	@Path("/followUser")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String followuser(@FormParam("id") String id,
+			@FormParam("followed") String followedID) {
+		Boolean status =  Followers.followUser(Integer.parseInt(id), Integer.parseInt(followedID));
+		JSONObject json = new JSONObject();
+		json.put("status", status ? 1 : 0);
+		return json.toJSONString();
+	} 
+	
+	
+	@POST
+	@Path("/getLastPosition")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String lastPosition(@FormParam("id") String id) {
+		String status = PlacesModel.getLastPosition(Integer.parseInt(id));
+		JSONObject json = new JSONObject();
+		json.put("status", status );
+		return json.toJSONString();
+	}
 	
 	
 	@GET
