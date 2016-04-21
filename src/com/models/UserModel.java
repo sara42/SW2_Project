@@ -61,6 +61,9 @@ public class UserModel {
 		return lon;
 	}
 
+	
+
+	
 	public void setLon(Double lon) {
 		this.lon = lon;
 	}
@@ -141,6 +144,60 @@ public class UserModel {
 			e.printStackTrace();
 		}
 		return false;
-	}
+	} 
+	
+	
+public static int get_ID(String email) throws SQLException
+{
+	Connection conn = DBConnection.getActiveConnection();
+	String sql = "Select `id`  from users where `email` = ? ";
+	PreparedStatement stmt;
+	stmt = conn.prepareStatement(sql);
+	stmt.setString(1, email);
+	ResultSet rs = stmt.executeQuery();
+	if (rs.next()) {
+		int id;
+	   id = rs.getInt(1);
+		return id;
+	} 
+	return (Integer) null;
+} 
 
+public static String get_name(int id) throws SQLException
+{
+	Connection conn = DBConnection.getActiveConnection();
+	String sql = "Select `name`  from users where `id` = ? ";
+	PreparedStatement stmt;
+	stmt = conn.prepareStatement(sql);
+	stmt.setInt(1, id);
+	ResultSet rs = stmt.executeQuery();
+	if (rs.next()) {
+		String name;
+	   name = rs.getString("name");
+		return name;
+	} 
+	return  null;
+}
+
+
+public static UserModel select_user(int id) throws SQLException
+{
+	Connection conn = DBConnection.getActiveConnection();
+	String sql = "Select * from users where  `id`= ? ";
+	PreparedStatement stmt;
+	stmt = conn.prepareStatement(sql);
+	stmt.setInt(1, id);
+	ResultSet rs = stmt.executeQuery();
+	if (rs.next()) {
+		UserModel user = new UserModel();
+		user.id = rs.getInt(1);
+		user.email = rs.getString("email");
+		user.pass = rs.getString("password");
+		user.name = rs.getString("name");
+		user.lat = rs.getDouble("lat");
+		user.lon = rs.getDouble("long");
+		return user;
+	} 
+	return  null;
+}
 }

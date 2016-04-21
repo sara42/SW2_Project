@@ -46,11 +46,11 @@ public class PlacesModel {
 		this.lon = lon;
 	}
 	
-	public static String getLastPosition (Integer id)
+	/*public static String getLastPosition (Integer id)
 	{
 		try {
 			Connection conn = DBConnection.getActiveConnection();
-			String sql = " Select * from users where  'id'= ?  ";
+			String sql = " Select * from users where  `id`= ?  ";
 			String name=null;
 
 			PreparedStatement stmt;
@@ -64,7 +64,7 @@ public class PlacesModel {
 				lon= rs.getDouble(5);
 				lat=rs.getDouble(6);
 			}
-			String Sql = " Select * from places where  'lon'= ?,'lat'=?  ";
+			String Sql = " Select * from places where  `long`= ? and `lat`=? ";
 			PreparedStatement stm;
 			stm = conn.prepareStatement(Sql);
 			stm.setDouble(1, lon);
@@ -79,7 +79,52 @@ public class PlacesModel {
 				
 		
 		return name;
+	}*/
+	
+	
+	public static String getLastPosition (int follower_id,int user_id ) throws SQLException
+	{
+		//Double  lon=0.0, lat=0.0;
+		
+			boolean flag=Followers.Is_follower(follower_id, user_id);
+			if (flag) ////lw l2ahom 5las kda kda followed 
+			{
+			UserModel user=UserModel.select_user(user_id);
+			Connection conn = DBConnection.getActiveConnection();
+			String Sql = "Select * from places where  `lat`= ? and `long`=? ";
+			PreparedStatement st;
+			st = conn.prepareStatement(Sql);
+			st.setDouble(1, user.getLat());
+			st.setDouble(2, user.getLon());
+			ResultSet ls = st.executeQuery();
+			if (ls.next())    name=ls.getString("name");
+			return name;
+			}
+			return null;
 	}
-	
-	
-}
+
+	public static PlacesModel AddPlace(String name,String Description,double lat,double Long) throws SQLException
+	{
+		Connection conn = DBConnection.getActiveConnection();
+		String sql="INSERT INTO places ( `name`, `description`, `lat`, `long`) VALUES (?,?,?,?)";
+		PreparedStatement stmt;
+		stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		stmt.setString(1,name);
+		stmt.setString(2,Description);
+		stmt.setDouble(3, lat);
+		stmt.setDouble(4, Long);
+		stmt.executeUpdate();
+		ResultSet rs = stmt.getGeneratedKeys();
+		if (rs.next()) {
+			PlacesModel place=new PlacesModel();
+			place.id=rs.getInt(1);
+			place.name=name;
+			place.description=Description;
+			place.lat=lat;
+			place.lon=Long;
+			return place;
+		} 
+		return null;
+		}
+	}
+

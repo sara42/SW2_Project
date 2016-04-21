@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import com.mysql.jdbc.Statement;
+
 public class Followers {
  int id1,id2;
 
@@ -68,7 +70,7 @@ public static boolean followUser(Integer userid,Integer followed)
 {
 	try{
 		Connection conn = DBConnection.getActiveConnection();
-		String sql = " Select from following where  'ID_1'= ? , `ID_2` = ? ";
+		String sql = " Select * from follower where  `ID_1`= ? and `ID_2` = ? ";
 		PreparedStatement stmt;
 		stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, userid);
@@ -78,14 +80,13 @@ public static boolean followUser(Integer userid,Integer followed)
 			return false ;
 		else 
 		{
-			String Sql = "Insert into following (`ID_1`,`ID_2') VALUES  (?,?)";
+			String Sql = "Insert into follower (`ID_1`,`ID_2`) VALUES  (?,?)";
 			PreparedStatement stm;
 			stm = conn.prepareStatement(Sql);
 			stm.setInt(1, userid);
 			stm.setInt(2, followed);
 			stm.executeUpdate();
 			return true;
-			
 		}
 		
 	}catch(SQLException e){
@@ -93,6 +94,19 @@ public static boolean followUser(Integer userid,Integer followed)
 	}
 	return false;
 	
+}
+
+public static boolean Is_follower(int id1,int id2) throws SQLException
+{
+	Connection conn = DBConnection.getActiveConnection();
+	String sql = "Select * from follower where  `ID_1`= ? and `ID_2` = ?"; 
+	PreparedStatement stmt;
+	stmt = conn.prepareStatement(sql);
+	stmt.setInt(1, id1);
+	stmt.setInt(2, id2);
+	ResultSet rs = stmt.executeQuery();
+	if(rs.next()) return true;
+	return false;
 }
 
 }
